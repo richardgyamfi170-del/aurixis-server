@@ -429,6 +429,22 @@ app.get("/api/v1/score", (req, res) => {
 
 setInterval(() => autoSyncEngine(false), 15000);
 
+app.get("/api/quote", async (req, res) => {
+  const symbol = String(req.query.symbol || "XAUUSD").toUpperCase();
+  if (symbol !== "XAUUSD" && symbol !== "XAU/USD") {
+    return res.status(400).json({ symbol, price: null, source: "Gold (XAUUSD) only" });
+  }
+  try {
+    await autoSyncEngine(true);
+    if (typeof state.price === "number" && Number.isFinite(state.price) && state.price > 0) {
+      return res.json({ symbol: "XAUUSD", price: state.price, source: state.source, updatedAt: state.updatedAt });
+    }
+    return res.json({ symbol: "XAUUSD", price: null, source: "No live gold price returned" });
+  } catch (err) {
+    return res.status(502).json({ symbol: "XAUUSD", price: null, source: err.message });
+  }
+});
+
 app.listen(PORT, () => {
   console.log("Aurixis Full Scope backend running on port " + PORT);
   autoSyncEngine(true);
