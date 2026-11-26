@@ -3,37 +3,59 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AURIXIS — XAU/USD Macro & Geopolitical Bias</title>
+  <title>AURIXIS — Full Scope XAU/USD</title>
   <style>
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      padding: 20px 14px 40px;
+      padding: 18px 14px 44px;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background: #050914;
       color: #f8fafc;
     }
     .wrap {
-      max-width: 520px;
+      max-width: 540px;
       margin: 0 auto;
     }
     .topbar {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      gap: 12px;
-      margin-bottom: 18px;
+      gap: 10px;
+      margin-bottom: 16px;
     }
     .brand-title {
       margin: 0;
-      font-size: 1.55rem;
+      font-size: 1.5rem;
       font-weight: 800;
-      letter-spacing: 0.02em;
       color: #f59e0b;
+      letter-spacing: 0.02em;
     }
     .brand-sub {
-      margin: 4px 0 0;
-      font-size: 0.9rem;
+      margin: 3px 0 0;
+      font-size: 0.85rem;
+      color: #94a3b8;
+    }
+    .top-actions {
+      display: flex;
+      align-items: stretch;
+      gap: 8px;
+    }
+    .sound-btn {
+      background: #0b241b;
+      border: 1px solid #15803d;
+      color: #4ade80;
+      border-radius: 12px;
+      padding: 8px 12px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      line-height: 1.2;
+      text-align: center;
+    }
+    .sound-btn.muted {
+      background: #141923;
+      border-color: #334155;
       color: #94a3b8;
     }
     .price-pill {
@@ -42,16 +64,17 @@
       border-radius: 12px;
       padding: 8px 12px;
       text-align: right;
-      min-width: 92px;
+      min-width: 104px;
       cursor: pointer;
     }
     .price-val {
       font-size: 0.95rem;
       font-weight: 700;
       color: #f8fafc;
+      font-variant-numeric: tabular-nums;
     }
     .price-sub {
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       color: #94a3b8;
       margin-top: 2px;
     }
@@ -59,36 +82,37 @@
       background: #0c1526;
       border: 1px solid rgba(148, 163, 184, 0.16);
       border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 16px;
+      padding: 18px;
+      margin-bottom: 14px;
     }
     .score-card {
       text-align: center;
-      padding: 26px 20px;
+      padding: 22px 18px;
     }
     .score-label {
-      font-size: 0.78rem;
+      font-size: 0.76rem;
       letter-spacing: 0.12em;
       text-transform: uppercase;
       color: #94a3b8;
       margin-bottom: 8px;
     }
     .score-num {
-      font-size: 3rem;
+      font-size: 2.9rem;
       font-weight: 800;
       line-height: 1.05;
       color: #22c55e;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
+      font-variant-numeric: tabular-nums;
     }
     .score-num.bearish { color: #ef4444; }
     .score-num.neutral { color: #eab308; }
     .badge {
       display: inline-block;
-      padding: 5px 14px;
+      padding: 4px 14px;
       border-radius: 999px;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       font-weight: 600;
-      background: rgba(34, 197, 94, 0.14);
+      background: rgba(34, 197, 94, 0.15);
       color: #4ade80;
     }
     .badge.bearish {
@@ -99,61 +123,99 @@
       background: rgba(234, 179, 8, 0.16);
       color: #facc15;
     }
-    .factor-row {
-      margin-bottom: 18px;
+    .cont-box {
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(148, 163, 184, 0.14);
+      text-align: left;
     }
-    .factor-row:last-child {
+    .cont-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #e2e8f0;
+    }
+    .cont-pct {
+      color: #94a3b8;
+      font-variant-numeric: tabular-nums;
+    }
+    .cont-reason {
+      margin-top: 5px;
+      font-size: 0.82rem;
+      color: #94a3b8;
+    }
+    .sec-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .sec-title { color: #38bdf8; }
+    .sec-pts { color: #38bdf8; font-variant-numeric: tabular-nums; }
+    .metric-row {
+      margin-bottom: 14px;
+    }
+    .metric-row:last-child {
       margin-bottom: 0;
     }
-    .factor-head {
+    .metric-top {
       display: flex;
       justify-content: space-between;
       align-items: baseline;
-      gap: 10px;
-      margin-bottom: 8px;
-      font-size: 0.95rem;
+      gap: 8px;
+      margin-bottom: 6px;
+      font-size: 0.9rem;
     }
-    .factor-name {
-      color: #e2e8f0;
-      font-weight: 500;
-    }
-    .factor-metric {
+    .metric-name { color: #e2e8f0; }
+    .metric-val {
       color: #cbd5e1;
       font-variant-numeric: tabular-nums;
-      font-size: 0.88rem;
+      font-size: 0.86rem;
       white-space: nowrap;
     }
-    .track {
-      position: relative;
-      height: 8px;
+    .bar-bg {
+      height: 7px;
       border-radius: 999px;
       background: #1e293b;
+      overflow: hidden;
     }
-    .fill {
+    .bar-fill {
       height: 100%;
+      width: 0%;
       border-radius: 999px;
       background: #eab308;
-      width: 30%;
       transition: width 0.25s ease;
     }
-    .knob {
-      position: absolute;
-      top: 50%;
-      left: 30%;
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      background: #facc15;
-      transform: translate(-50%, -50%);
-      box-shadow: 0 0 0 2px #0c1526;
-      transition: left 0.25s ease;
+    .log-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 0;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+      font-size: 0.82rem;
+      font-variant-numeric: tabular-nums;
     }
-    .foot-note {
-      font-size: 0.78rem;
-      color: #64748b;
-      text-align: center;
-      margin-top: 8px;
+    .log-item:last-child { border-bottom: none; }
+    .log-tag {
+      padding: 2px 7px;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      background: rgba(168, 85, 247, 0.2);
+      color: #c084fc;
+      margin-right: 6px;
     }
+    .log-meta { color: #94a3b8; }
+    .log-score { font-weight: 700; color: #4ade80; white-space: nowrap; }
+    .log-score.bearish { color: #f87171; }
+    .log-score.neutral { color: #facc15; }
   </style>
 </head>
 <body>
@@ -161,173 +223,256 @@
     <div class="topbar">
       <div>
         <h1 class="brand-title">AURIXIS</h1>
-        <p class="brand-sub">XAU/USD Macro &amp; Geopolitical Bias</p>
+        <p class="brand-sub" id="sessionSub">Full Scope XAU/USD · Syncing...</p>
       </div>
-      <div class="price-pill" id="priceBox" title="Tap to refresh XAU/USD quote">
-        <div class="price-val" id="spotPrice">$--</div>
-        <div class="price-sub" id="spotStatus">Awaiting feed</div>
+      <div class="top-actions">
+        <button class="sound-btn" id="soundBtn" type="button">Sound:<br/>ON</button>
+        <div class="price-pill" id="priceBox" title="Tap to refresh XAU/USD quote">
+          <div class="price-val" id="spotPrice">$--</div>
+          <div class="price-sub" id="spotStatus">Awaiting feed</div>
+        </div>
       </div>
     </div>
 
     <div class="card score-card">
-      <div class="score-label">BIAS SCORE</div>
-      <div class="score-num" id="biasScore">+43</div>
-      <div class="badge" id="biasBadge">Bullish</div>
+      <div class="score-label">FULL SCOPE BIAS SCORE</div>
+      <div class="score-num neutral" id="biasScore">--</div>
+      <div class="badge neutral" id="biasBadge">Syncing</div>
+
+      <div class="cont-box">
+        <div class="cont-head">
+          <span id="contVerdict">+50 Continuation Check</span>
+          <span class="cont-pct" id="contPct">--%</span>
+        </div>
+        <div class="cont-reason" id="contReason">Waiting for backend score data...</div>
+      </div>
     </div>
 
     <div class="card">
-      <div class="factor-row">
-        <div class="factor-head">
-          <span class="factor-name">DXY Trend</span>
-          <span class="factor-metric" id="mDxy">-0.6 (+21 pts)</span>
-        </div>
-        <div class="track">
-          <div class="fill" id="fDxy"></div>
-          <div class="knob" id="kDxy"></div>
-        </div>
+      <div class="sec-head">
+        <span class="sec-title">1. USD &amp; RATES</span>
+        <span class="sec-pts" id="ptsUsdRates">-- PTS</span>
       </div>
-
-      <div class="factor-row">
-        <div class="factor-head">
-          <span class="factor-name">10Y Yields &amp; Rates</span>
-          <span class="factor-metric" id="mRates">-0.7 (+18 pts)</span>
-        </div>
-        <div class="track">
-          <div class="fill" id="fRates"></div>
-          <div class="knob" id="kRates"></div>
-        </div>
-      </div>
-
-      <div class="factor-row">
-        <div class="factor-head">
-          <span class="factor-name">Inflation (CPI / NFP)</span>
-          <span class="factor-metric" id="mInflation">-0.7 (-10 pts)</span>
-        </div>
-        <div class="track">
-          <div class="fill" id="fInflation"></div>
-          <div class="knob" id="kInflation"></div>
-        </div>
-      </div>
-
-      <div class="factor-row">
-        <div class="factor-head">
-          <span class="factor-name">War &amp; Geopolitical Risk</span>
-          <span class="factor-metric" id="mWar">0.6 (+15 pts)</span>
-        </div>
-        <div class="track">
-          <div class="fill" id="fWar"></div>
-          <div class="knob" id="kWar"></div>
-        </div>
-      </div>
+      <div id="groupUsdRates"></div>
     </div>
 
-    <div class="foot-note" id="syncNote">Gold (XAU/USD) macro &amp; geopolitical view</div>
+    <div class="card">
+      <div class="sec-head">
+        <span class="sec-title">2. INFLATION, LABOR &amp; GROWTH</span>
+        <span class="sec-pts" id="ptsMacroLabor">-- PTS</span>
+      </div>
+      <div id="groupMacroLabor"></div>
+    </div>
+
+    <div class="card">
+      <div class="sec-head">
+        <span class="sec-title">3. GLOBAL GOLD DEMAND</span>
+        <span class="sec-pts" id="ptsPhysical">-- PTS</span>
+      </div>
+      <div id="groupPhysical"></div>
+    </div>
+
+    <div class="card">
+      <div class="sec-head">
+        <span class="sec-title">4. POSITIONING &amp; GEOPOLITICS</span>
+        <span class="sec-pts" id="ptsGeo">-- PTS</span>
+      </div>
+      <div id="groupGeo"></div>
+    </div>
+
+    <div class="card">
+      <div class="sec-head">
+        <span class="sec-title">5. SESSION BIAS LOG</span>
+        <span class="sec-pts" id="logCount">0 ENTRIES</span>
+      </div>
+      <div id="sessionLog"><div class="log-meta">No session entries yet.</div></div>
+    </div>
   </div>
 
   <script>
-    function setBar(fillId, knobId, normValue) {
-      const pct = Math.max(4, Math.min(96, Math.round(normValue * 100)));
-      document.getElementById(fillId).style.width = pct + "%";
-      document.getElementById(knobId).style.left = pct + "%";
+    let soundOn = true;
+    const soundBtn = document.getElementById("soundBtn");
+    soundBtn.addEventListener("click", () => {
+      soundOn = !soundOn;
+      soundBtn.classList.toggle("muted", !soundOn);
+      soundBtn.innerHTML = soundOn ? "Sound:<br/>ON" : "Sound:<br/>OFF";
+    });
+
+    function fmtSigned(n, decimals = 2) {
+      const v = Number(n);
+      if (!Number.isFinite(v)) return "--";
+      return (v >= 0 ? "+" : "") + v.toFixed(decimals);
     }
 
     function fmtPts(n) {
-      const val = Math.round(Number(n) || 0);
-      return (val >= 0 ? "+" : "") + val + " pts";
+      const v = Number(n);
+      if (!Number.isFinite(v)) return "-- PTS";
+      const r = Math.round(v);
+      return (r >= 0 ? "+" : "") + r + " PTS";
     }
 
-    function fmtNum(n) {
-      const val = Number(n);
-      if (!Number.isFinite(val)) return "0.0";
-      return val.toFixed(1);
+    function renderRows(containerId, items) {
+      const el = document.getElementById(containerId);
+      el.innerHTML = items.map((it) => {
+        const hasVal = typeof it.val === "number" && Number.isFinite(it.val);
+        const pct = hasVal
+          ? (it.unipolar ? Math.max(2, Math.min(100, Math.round(it.val * 100))) : Math.max(2, Math.min(100, Math.round(((it.val + 1) / 2) * 100))))
+          : 0;
+        const textVal = hasVal ? fmtSigned(it.val, 2) : "--";
+        return `
+          <div class="metric-row">
+            <div class="metric-top">
+              <span class="metric-name">${it.label}</span>
+              <span class="metric-val">${textVal}</span>
+            </div>
+            <div class="bar-bg"><div class="bar-fill" style="width:${pct}%"></div></div>
+          </div>
+        `;
+      }).join("");
     }
 
     async function loadQuote() {
       const priceEl = document.getElementById("spotPrice");
       const statusEl = document.getElementById("spotStatus");
       statusEl.textContent = "Syncing...";
-
       try {
         const res = await fetch("/api/quote?symbol=XAUUSD");
         if (!res.ok) throw new Error("HTTP " + res.status);
-        const data = await res.json();
-        if (typeof data.price === "number" && Number.isFinite(data.price) && data.price > 0) {
-          priceEl.textContent = "$" + data.price.toFixed(2);
-          statusEl.textContent = data.source || "Live XAU/USD";
+        const d = await res.json();
+        if (typeof d.price === "number" && Number.isFinite(d.price) && d.price > 0) {
+          priceEl.textContent = "$" + d.price.toFixed(2);
+          const t = d.updatedAt ? new Date(d.updatedAt).toTimeString().slice(0, 8) : "";
+          statusEl.textContent = (d.source || "Live") + (t ? " · " + t : "");
         } else {
           priceEl.textContent = "$--";
-          statusEl.textContent = data.source || "No live feed";
+          statusEl.textContent = d.source || "No live feed";
         }
-      } catch (e) {
+      } catch (_) {
         priceEl.textContent = "$--";
         statusEl.textContent = "Offline";
       }
     }
 
-    async function loadMacroScore() {
+    async function loadFullScope() {
       try {
         const res = await fetch("/api/v1/score");
         if (!res.ok) return;
-        const data = await res.json();
-        const score = Number(data.score);
-        if (Number.isFinite(score)) {
-          const scoreEl = document.getElementById("biasScore");
-          const badgeEl = document.getElementById("biasBadge");
-          scoreEl.textContent = (score >= 0 ? "+" : "") + Math.round(score);
-          badgeEl.textContent = data.status || (score >= 20 ? "Bullish" : score <= -20 ? "Bearish" : "Neutral");
+        const d = await res.json();
 
+        document.getElementById("sessionSub").textContent =
+          `Full Scope XAU/USD · ${d.session || "SESSION"}`;
+
+        const score = Number(d.score);
+        const scoreEl = document.getElementById("biasScore");
+        const badgeEl = document.getElementById("biasBadge");
+        if (Number.isFinite(score)) {
+          scoreEl.textContent = (score >= 0 ? "+" : "") + Math.round(score);
+          badgeEl.textContent = d.status || "Neutral";
           scoreEl.classList.remove("bearish", "neutral");
           badgeEl.classList.remove("bearish", "neutral");
-          if (score <= -20) {
+          if (score >= 20) {
+            // green default
+          } else if (score <= -20) {
             scoreEl.classList.add("bearish");
             badgeEl.classList.add("bearish");
-          } else if (score < 20 && score > -20) {
+          } else {
             scoreEl.classList.add("neutral");
             badgeEl.classList.add("neutral");
           }
         }
 
-        const m = data.metrics || {};
-        const cat = data.categories || {};
-
-        if (m.dxy !== undefined) {
-          const pts = -(Number(m.dxy || 0) * 15);
-          document.getElementById("mDxy").textContent = `${fmtNum(m.dxy)} (${fmtPts(pts)})`;
-          setBar("fDxy", "kDxy", (Number(m.dxy || 0) + 1) / 2);
-        }
-        if (m.realYields10y !== undefined || m.interestRate !== undefined) {
-          const val = Number(m.realYields10y ?? m.interestRate ?? 0);
-          const pts = -(Number(m.interestRate || 0) * 10) - (Number(m.realYields10y || 0) * 10);
-          document.getElementById("mRates").textContent = `${fmtNum(val)} (${fmtPts(pts)})`;
-          setBar("fRates", "kRates", (val + 1) / 2);
-        }
-        if (m.cpi !== undefined || m.nfp !== undefined) {
-          const val = Number(m.cpi ?? 0);
-          const pts = (Number(m.cpi || 0) * 5) + (Number(m.pce || 0) * 5) - (Number(m.nfp || 0) * 4);
-          document.getElementById("mInflation").textContent = `${fmtNum(val)} (${fmtPts(pts)})`;
-          setBar("fInflation", "kInflation", (val + 1) / 2);
-        }
-        if (m.warRisk !== undefined) {
-          const val = Number(m.warRisk || 0);
-          const pts = Number(m.warRisk || 0) * 8;
-          document.getElementById("mWar").textContent = `${fmtNum(val)} (${fmtPts(pts)})`;
-          setBar("fWar", "kWar", Math.max(0, Math.min(1, val)));
+        if (d.continuation) {
+          document.getElementById("contVerdict").textContent =
+            d.continuation.verdict || "+50 Continuation Check";
+          document.getElementById("contPct").textContent =
+            Number.isFinite(Number(d.continuation.probabilityPct))
+              ? `${d.continuation.probabilityPct}%`
+              : "--%";
+          document.getElementById("contReason").textContent =
+            d.continuation.reason || "";
         }
 
-        document.getElementById("syncNote").textContent =
-          `Session: ${data.session || "XAU/USD"} · Updated ${new Date().toLocaleTimeString()}`;
+        const m = d.metrics || {};
+        const c = d.categories || {};
+
+        document.getElementById("ptsUsdRates").textContent = fmtPts(c.usdRates);
+        renderRows("groupUsdRates", [
+          { label: "DXY (Dollar Index)", val: m.dxy },
+          { label: "Interest Rate", val: m.interestRate },
+          { label: "Real Yields (10Y)", val: m.realYields10y }
+        ]);
+
+        document.getElementById("ptsMacroLabor").textContent = fmtPts(c.macroLabor);
+        renderRows("groupMacroLabor", [
+          { label: "CPI (Consumer Price Index)", val: m.cpi },
+          { label: "PCE Price Index", val: m.pce },
+          { label: "Non-Farm Payrolls (NFP)", val: m.nfp },
+          { label: "Unemployment Rate", val: m.unemploymentRate },
+          { label: "GDP Growth", val: m.gdpGrowth },
+          { label: "ISM Mfg & Services PMI", val: m.ismPmi },
+          { label: "Initial Jobless Claims", val: m.initialJobClaims }
+        ]);
+
+        document.getElementById("ptsPhysical").textContent = fmtPts(c.physicalDemand);
+        renderRows("groupPhysical", [
+          { label: "Central Bank Gold Purchases", val: m.centralBankPurchases },
+          { label: "SPDR Gold ETF Holdings", val: m.spdrEtfHoldings },
+          { label: "China Gold Imports", val: m.chinaGoldImports },
+          { label: "India Gold Imports", val: m.indiaGoldImports }
+        ]);
+
+        document.getElementById("ptsGeo").textContent = fmtPts(c.positioningGeo);
+        renderRows("groupGeo", [
+          { label: "COT Report Positioning", val: m.cotReport },
+          { label: "War & Geopolitical Risk", val: m.warRisk, unipolar: true }
+        ]);
       } catch (_) {}
     }
 
-    // Initial slider positions matching the reference view until live metrics sync
-    setBar("fDxy", "kDxy", 0.24);
-    setBar("fRates", "kRates", 0.22);
-    setBar("fInflation", "kInflation", 0.22);
-    setBar("fWar", "kWar", 0.62);
+    async function loadHistory() {
+      try {
+        const res = await fetch("/api/v1/history");
+        if (!res.ok) return;
+        const d = await res.json();
+        const entries = Array.isArray(d.entries) ? d.entries : [];
+        document.getElementById("logCount").textContent = `${entries.length} ENTRIES`;
+        const box = document.getElementById("sessionLog");
+        if (!entries.length) {
+          box.innerHTML = `<div class="log-meta">No session entries yet.</div>`;
+          return;
+        }
+        box.innerHTML = entries.slice(0, 8).map((e) => {
+          const sc = Number(e.score);
+          const t = e.time ? new Date(e.time).toTimeString().slice(0, 8) : "--:--:--";
+          const pr = typeof e.price === "number" && Number.isFinite(e.price) ? `$${e.price.toFixed(2)}` : "$--";
+          const cls = sc <= -20 ? "bearish" : (sc > -20 && sc < 20 ? "neutral" : "");
+          const sText = Number.isFinite(sc) ? ((sc >= 0 ? "+" : "") + sc + ` (${e.status || ""})`) : "--";
+          return `
+            <div class="log-item">
+              <div>
+                <span class="log-tag">${e.session || "XAU"}</span>
+                <span class="log-meta">${t} · ${pr}</span>
+              </div>
+              <div class="log-score ${cls}">${sText}</div>
+            </div>
+          `;
+        }).join("");
+      } catch (_) {}
+    }
 
-    document.getElementById("priceBox").addEventListener("click", loadQuote);
+    document.getElementById("priceBox").addEventListener("click", () => {
+      loadQuote();
+      loadFullScope();
+      loadHistory();
+    });
+
     loadQuote();
-    loadMacroScore();
+    loadFullScope();
+    loadHistory();
+    setInterval(() => {
+      loadFullScope();
+      loadHistory();
+    }, 15000);
   </script>
 </body>
 </html>
