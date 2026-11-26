@@ -3,294 +3,643 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Aurixis — Full Scope XAU/USD</title>
+  <title>AURIXIS — AI Macroeconomic Intelligence</title>
   <style>
-    * { box-sizing: border-box; }
-    body { margin: 0; background: #090d16; color: #f8fafc; font-family: system-ui, sans-serif; padding: 14px; }
-    .wrap { max-width: 520px; margin: 0 auto; }
-    .top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; gap: 10px; }
-    h1 { margin: 0 0 2px 0; font-size: 1.45rem; color: #fbbf24; }
-    .sub { color: #94a3b8; font-size: 0.78rem; }
-    .controls { display: flex; gap: 8px; align-items: center; }
-    .sound-btn {
-      background: #1e293b; color: #f8fafc; border: 1px solid #334155;
-      border-radius: 10px; padding: 8px 10px; font-size: 0.75rem; font-weight: 700; cursor: pointer;
+    :root {
+      --bg-void: #050914;
+      --bg-panel: #0b1326;
+      --bg-card: #0f1b33;
+      --bg-card-elevated: #132240;
+      --bg-sidebar: #081022;
+      --border-subtle: rgba(96, 165, 250, 0.16);
+      --border-strong: rgba(59, 130, 246, 0.35);
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --accent-blue: #2563eb;
+      --accent-blue-bright: #3b82f6;
+      --accent-cyan: #38bdf8;
+      --accent-gold: #f59e0b;
+      --accent-green: #22c55e;
+      --accent-amber: #eab308;
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Helvetica, Arial, sans-serif;
     }
-    .sound-btn.active { background: rgba(34, 197, 94, 0.16); border-color: #22c55e; color: #4ade80; }
-    .live-box { text-align: right; background: #111827; border: 1px solid #1f2937; border-radius: 10px; padding: 8px 12px; min-width: 112px; }
-    .live-price { font-size: 1rem; font-weight: 700; color: #fbbf24; }
-    .live-meta { font-size: 0.68rem; color: #94a3b8; }
-    .alert-banner {
-      display: none; background: rgba(239, 68, 68, 0.16); border: 1px solid #ef4444;
-      color: #fca5a5; border-radius: 10px; padding: 10px 12px; font-size: 0.8rem;
-      font-weight: 600; margin-bottom: 12px;
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-sans);
+      background: radial-gradient(circle at 75% 15%, rgba(37, 99, 235, 0.14), transparent 45%),
+                  radial-gradient(circle at 15% 85%, rgba(245, 158, 11, 0.06), transparent 40%),
+                  var(--bg-void);
+      color: var(--text-primary);
+      min-height: 100vh;
+      line-height: 1.45;
+      overflow-x: hidden;
     }
-    .alert-banner.bull { background: rgba(34, 197, 94, 0.16); border-color: #22c55e; color: #86efac; }
-    .card { background: #111827; border: 1px solid #1f2937; border-radius: 12px; padding: 14px; margin-bottom: 12px; }
-    .center { text-align: center; }
-    .score { font-size: 2.8rem; font-weight: 800; margin: 4px 0; }
-    .badge { display: inline-block; padding: 4px 12px; border-radius: 999px; font-weight: 700; font-size: 0.85rem; }
-    .cont-box { margin-top: 12px; padding-top: 10px; border-top: 1px solid #1e293b; text-align: left; }
-    .cont-top { display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem; font-weight: 700; color: #fbbf24; }
-    .cont-note { margin-top: 4px; font-size: 0.75rem; color: #cbd5e1; }
-    .warn { margin-top: 8px; font-size: 0.78rem; color: #fbbf24; background: rgba(251,191,36,0.12); padding: 7px; border-radius: 6px; display: none; }
-    .sec-head { display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem; font-weight: 700; color: #38bdf8; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.03em; }
-    .row { margin-bottom: 10px; }
-    .row:last-child { margin-bottom: 0; }
-    .label { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 4px; color: #e2e8f0; }
-    .track { height: 6px; background: #1e293b; border-radius: 999px; overflow: hidden; }
-    .fill { height: 100%; background: #fbbf24; width: 50%; transition: width 0.35s ease; }
-    .log-item { display: flex; justify-content: space-between; align-items: center; font-size: 0.76rem; padding: 6px 0; border-bottom: 1px solid #1e293b; color: #cbd5e1; }
-    .log-item:last-child { border-bottom: none; }
-    .tag { font-size: 0.68rem; font-weight: 700; padding: 2px 6px; border-radius: 6px; background: #1e293b; color: #38bdf8; margin-right: 6px; }
+
+    .topbar {
+      position: sticky; top: 0; z-index: 30;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      padding: 12px 20px; background: rgba(7, 13, 27, 0.92);
+      backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .brand-group { display: flex; align-items: center; gap: 12px; }
+
+    .brand-logo {
+      width: 38px; height: 38px; border-radius: 10px;
+      background: linear-gradient(145deg, rgba(245, 158, 11, 0.2), rgba(15, 27, 51, 0.95));
+      border: 1px solid rgba(245, 158, 11, 0.45);
+      display: grid; place-items: center; flex-shrink: 0;
+    }
+
+    .brand-title { font-size: 1.15rem; font-weight: 800; letter-spacing: 0.06em; }
+    .brand-subtitle { font-size: 0.72rem; color: var(--text-secondary); }
+
+    .live-pill {
+      display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px;
+      border-radius: 999px; background: rgba(20, 83, 45, 0.35);
+      border: 1px solid rgba(34, 197, 94, 0.45); color: #86efac;
+      font-size: 0.8rem; font-weight: 600; white-space: nowrap;
+    }
+
+    .live-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--accent-green); box-shadow: 0 0 8px var(--accent-green);
+    }
+
+    .topbar-actions { display: flex; align-items: center; gap: 10px; }
+
+    .ctrl-select, .ctrl-btn {
+      height: 36px; padding: 0 14px; border-radius: var(--radius-sm);
+      font-family: inherit; font-size: 0.84rem; font-weight: 600; cursor: pointer;
+    }
+
+    .ctrl-select {
+      background: var(--bg-card); color: var(--text-primary);
+      border: 1px solid var(--border-subtle); outline: none;
+    }
+
+    .ctrl-btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: linear-gradient(180deg, var(--accent-blue-bright), var(--accent-blue));
+      color: #ffffff; border: 1px solid rgba(147, 197, 253, 0.35);
+    }
+
+    .avatar-btn, .mobile-bell-btn {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--bg-card); border: 1px solid var(--border-subtle);
+      color: var(--text-secondary); display: grid; place-items: center; cursor: pointer;
+    }
+
+    .mobile-bell-btn { display: none; color: var(--text-primary); }
+
+    .app-shell { display: flex; min-height: calc(100vh - 63px - 38px); }
+
+    .sidebar {
+      width: 190px; flex-shrink: 0; background: var(--bg-sidebar);
+      border-right: 1px solid var(--border-subtle); padding: 14px 10px;
+      display: flex; flex-direction: column; gap: 6px;
+    }
+
+    .nav-item {
+      width: 100%; display: flex; align-items: center; gap: 11px;
+      padding: 11px 13px; border-radius: var(--radius-md); background: transparent;
+      border: 1px solid transparent; color: var(--text-secondary);
+      font-family: inherit; font-size: 0.9rem; font-weight: 500;
+      text-align: left; cursor: pointer;
+    }
+
+    .nav-item.active {
+      background: linear-gradient(90deg, var(--accent-blue-bright), var(--accent-blue));
+      color: #ffffff; font-weight: 600;
+    }
+
+    .main-content {
+      flex: 1; padding: 18px 20px 24px; display: flex; flex-direction: column;
+      gap: 16px; max-width: 1440px; margin: 0 auto; width: 100%;
+    }
+
+    .view-panel { display: none; flex-direction: column; gap: 16px; }
+    .view-panel.active { display: flex; }
+
+    .hero-grid { display: grid; grid-template-columns: 1.65fr 1fr; gap: 16px; }
+
+    .bias-hero-card {
+      position: relative; overflow: hidden; border-radius: var(--radius-lg);
+      background: linear-gradient(120deg, #0b162c 0%, #0e2247 52%, #09152b 100%);
+      border: 1px solid var(--border-strong); padding: 22px 24px;
+      display: flex; align-items: center; justify-content: space-between; min-height: 176px;
+    }
+
+    .bias-hero-content { position: relative; z-index: 2; display: flex; flex-direction: column; gap: 6px; }
+    .bias-label-row { display: flex; align-items: center; gap: 8px; font-size: 0.95rem; font-weight: 600; color: #e2e8f0; }
+
+    .info-badge {
+      width: 18px; height: 18px; border-radius: 50%;
+      border: 1px solid rgba(148, 163, 184, 0.55); color: var(--text-secondary);
+      font-size: 0.72rem; display: inline-grid; place-items: center;
+    }
+
+    .bias-status {
+      font-size: clamp(1.9rem, 3.2vw, 2.65rem); font-weight: 800;
+      color: #4ade80; display: flex; align-items: center; gap: 8px; line-height: 1.1;
+    }
+
+    .bias-confidence { font-size: 1.1rem; font-weight: 700; margin-top: 2px; }
+
+    .globe-visual {
+      position: relative; width: 148px; height: 148px; flex-shrink: 0; border-radius: 50%;
+      background:
+        radial-gradient(circle at 32% 28%, rgba(125, 211, 252, 0.65), rgba(14, 116, 144, 0.45) 45%, rgba(6, 20, 46, 0.95) 78%),
+        repeating-linear-gradient(0deg, rgba(251, 191, 36, 0.16) 0 1px, transparent 1px 14px),
+        repeating-linear-gradient(90deg, rgba(56, 189, 248, 0.18) 0 1px, transparent 1px 16px);
+      box-shadow: 0 0 28px rgba(56, 189, 248, 0.35), inset -16px -12px 26px rgba(2, 6, 23, 0.85);
+      border: 1px solid rgba(125, 211, 252, 0.35); z-index: 2;
+    }
+
+    .globe-orbit {
+      position: absolute; inset: -10px; border-radius: 50%;
+      border: 1px dashed rgba(251, 191, 36, 0.45); transform: rotate(-18deg);
+    }
+
+    .globe-node {
+      position: absolute; width: 7px; height: 7px; border-radius: 50%;
+      background: #fbbf24; box-shadow: 0 0 10px #fbbf24;
+    }
+    .globe-node.n1 { top: 28%; left: 38%; }
+    .globe-node.n2 { top: 46%; left: 62%; }
+    .globe-node.n3 { top: 65%; left: 45%; }
+
+    .insight-card {
+      border-radius: var(--radius-lg);
+      background: linear-gradient(155deg, rgba(19, 34, 64, 0.95), rgba(9, 17, 34, 0.98));
+      border: 1px solid var(--border-subtle); padding: 20px 22px;
+      display: flex; flex-direction: column; justify-content: space-between; gap: 12px;
+    }
+
+    .insight-header { display: flex; align-items: center; gap: 9px; font-size: 1rem; font-weight: 700; color: #fde047; }
+    .insight-body { font-size: 0.95rem; color: #e2e8f0; line-height: 1.5; }
+    .insight-footer {
+      display: flex; align-items: center; gap: 6px; font-size: 0.78rem;
+      color: var(--text-secondary); padding-top: 8px; border-top: 1px solid rgba(148, 163, 184, 0.14);
+    }
+
+    .metrics-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+
+    .metric-card {
+      background: var(--bg-card); border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md); padding: 15px 18px;
+      display: flex; align-items: center; justify-content: space-between; gap: 14px;
+    }
+
+    .metric-left { display: flex; align-items: center; gap: 13px; min-width: 0; }
+
+    .metric-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      display: grid; place-items: center; flex-shrink: 0; font-weight: 700;
+    }
+    .icon-slate { background: rgba(148, 163, 184, 0.14); color: #cbd5e1; }
+    .icon-green { background: rgba(34, 197, 94, 0.14); color: #4ade80; }
+    .icon-cyan  { background: rgba(56, 189, 248, 0.15); color: #38bdf8; }
+    .icon-gold  { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+
+    .metric-title { font-size: 0.92rem; font-weight: 600; }
+    .metric-sub { font-size: 0.8rem; font-weight: 600; margin-top: 2px; }
+    .sub-neutral { color: #93c5fd; }
+    .sub-positive { color: #4ade80; }
+    .sub-expanding { color: #38bdf8; }
+    .sub-cautious { color: #facc15; }
+
+    .metric-right { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
+    .metric-value { font-size: 1.35rem; font-weight: 800; text-align: right; }
+    .sparkline-svg { width: 92px; height: 36px; overflow: visible; }
+
+    .bottom-grid { display: grid; grid-template-columns: 1.35fr 1fr; gap: 16px; }
+
+    .panel-box {
+      background: var(--bg-card); border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg); padding: 16px 18px;
+      display: flex; flex-direction: column; gap: 12px;
+    }
+
+    .panel-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .panel-title-wrap { display: flex; align-items: center; gap: 8px; font-size: 0.98rem; font-weight: 700; }
+
+    .view-all-btn {
+      background: rgba(30, 58, 138, 0.45); border: 1px solid rgba(96, 165, 250, 0.3);
+      color: #dbeafe; font-family: inherit; font-size: 0.78rem; font-weight: 600;
+      padding: 5px 11px; border-radius: var(--radius-sm); cursor: pointer;
+    }
+
+    .signal-list { display: flex; flex-direction: column; gap: 8px; }
+
+    .signal-row {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      padding: 10px 12px; border-radius: var(--radius-md);
+      background: rgba(7, 15, 31, 0.65); border: 1px solid rgba(148, 163, 184, 0.1);
+    }
+
+    .signal-left { display: flex; align-items: flex-start; gap: 10px; min-width: 0; }
+    .signal-dot { width: 9px; height: 9px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+    .dot-bullish { background: var(--accent-green); }
+    .dot-neutral { background: var(--accent-blue-bright); }
+    .dot-cautious { background: var(--accent-amber); }
+
+    .signal-meta { font-size: 0.78rem; color: var(--text-secondary); font-weight: 600; }
+    .signal-desc { font-size: 0.84rem; color: var(--text-primary); margin-top: 2px; }
+
+    .tag-pill {
+      padding: 4px 11px; border-radius: 7px; font-size: 0.75rem;
+      font-weight: 700; white-space: nowrap; flex-shrink: 0;
+    }
+    .tag-bullish { background: rgba(22, 101, 52, 0.55); color: #86efac; }
+    .tag-neutral { background: rgba(30, 64, 175, 0.6); color: #bfdbfe; }
+    .tag-cautious { background: rgba(133, 77, 14, 0.55); color: #fde047; }
+
+    .market-tabs {
+      display: flex; align-items: center; gap: 6px;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.14); padding-bottom: 8px;
+    }
+
+    .market-tab {
+      background: transparent; border: none; color: var(--text-secondary);
+      font-family: inherit; font-size: 0.82rem; font-weight: 600;
+      padding: 5px 12px; border-radius: var(--radius-sm); cursor: pointer;
+    }
+    .market-tab.active { background: var(--accent-blue-bright); color: #ffffff; }
+
+    .market-rows { display: flex; flex-direction: column; gap: 8px; }
+
+    .market-row {
+      display: grid; grid-template-columns: 1.1fr 0.9fr 0.8fr 74px;
+      align-items: center; gap: 8px; padding: 9px 10px;
+      border-radius: var(--radius-sm); background: rgba(7, 15, 31, 0.55); font-size: 0.86rem;
+    }
+    .pair-symbol { font-weight: 700; }
+    .pair-price { font-weight: 600; color: #e2e8f0; text-align: right; }
+    .pair-change-pos { color: #4ade80; font-weight: 700; font-size: 0.8rem; text-align: right; }
+    .pair-change-neg { color: #f87171; font-weight: 700; font-size: 0.8rem; text-align: right; }
+
+    .pro-banner {
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;
+      gap: 10px; padding: 9px 20px; background: #060b18;
+      border-top: 1px solid var(--border-subtle); font-size: 0.8rem;
+    }
+    .pro-banner-left { display: flex; align-items: center; gap: 8px; color: #fbbf24; font-weight: 600; }
+    .pro-banner-left span.muted { color: var(--text-secondary); font-weight: 400; }
+    .pro-banner-right { color: #fde047; font-weight: 600; }
+
+    .mobile-bottom-nav {
+      display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 35;
+      background: rgba(7, 15, 31, 0.96); backdrop-filter: blur(12px);
+      border-top: 1px solid var(--border-strong); padding: 6px 8px; justify-content: space-around;
+    }
+
+    .mobile-nav-btn {
+      background: transparent; border: none; color: var(--text-secondary);
+      font-family: inherit; font-size: 0.72rem; font-weight: 600;
+      display: flex; flex-direction: column; align-items: center; gap: 3px;
+      padding: 4px 10px; border-radius: var(--radius-sm); cursor: pointer;
+    }
+    .mobile-nav-btn.active { color: #60a5fa; }
+
+    @media (max-width: 960px) {
+      .hero-grid, .bottom-grid { grid-template-columns: 1fr; }
+      .metrics-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 760px) {
+      .sidebar, .topbar-actions, .pro-banner { display: none; }
+      .mobile-bell-btn { display: grid; }
+      .topbar { padding: 10px 14px; }
+      .main-content { padding: 14px 14px 82px; }
+      .bias-hero-card { padding: 16px; min-height: 148px; }
+      .globe-visual { width: 108px; height: 108px; }
+      .metric-card { padding: 12px 14px; }
+      .metric-value { font-size: 1.15rem; }
+      .sparkline-svg { width: 72px; height: 30px; }
+      .mobile-bottom-nav { display: flex; }
+    }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="top">
+  <header class="topbar">
+    <div class="brand-group">
+      <div class="brand-logo" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <path d="M12 3L21 20H16.6L12 10.8L7.4 20H3L12 3Z" fill="#f59e0b"/>
+          <path d="M12 14.5L15 20H9L12 14.5Z" fill="#fde047"/>
+        </svg>
+      </div>
       <div>
-        <h1>AURIXIS</h1>
-        <div id="sessionSub" class="sub">Full Scope XAU/USD Engine (16 Metrics)</div>
+        <div class="brand-title">AURIXIS</div>
+        <div class="brand-subtitle">AI Macroeconomic Intelligence</div>
       </div>
-      <div class="controls">
-        <button id="soundBtn" class="sound-btn" type="button">Sound: OFF</button>
-        <div class="live-box">
-          <div id="xauPrice" class="live-price">AUTO</div>
-          <div id="xauMeta" class="live-meta">Starting...</div>
+    </div>
+
+    <div class="live-pill">
+      <span class="live-dot"></span>
+      <span>AI Intelligence Live</span>
+    </div>
+
+    <div class="topbar-actions">
+      <select class="ctrl-select" id="marketFilter" aria-label="Market Filter">
+        <option value="all" selected>All Markets</option>
+        <option value="forex">Forex</option>
+        <option value="gold">Gold</option>
+        <option value="indices">Indices</option>
+        <option value="crypto">Crypto</option>
+      </select>
+      <button class="ctrl-btn" id="refreshBtn" type="button">&#8635; Refresh</button>
+      <button class="avatar-btn" type="button" aria-label="Account">&#9786;</button>
+    </div>
+
+    <button class="mobile-bell-btn" type="button" aria-label="Alerts">&#128276;</button>
+  </header>
+
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Primary Navigation">
+      <button class="nav-item active" data-view="dashboard" type="button">&#8962; Dashboard</button>
+      <button class="nav-item" data-view="markets" type="button">&#9776; Markets</button>
+      <button class="nav-item" data-view="insights" type="button">&#128161; Insights</button>
+      <button class="nav-item" data-view="reports" type="button">&#128196; Reports</button>
+      <button class="nav-item" data-view="settings" type="button">&#9881; Settings</button>
+      <button class="nav-item" data-view="about" type="button">&#9432; About</button>
+    </aside>
+
+    <main class="main-content">
+      <section class="view-panel active" id="view-dashboard">
+        <div class="hero-grid">
+          <div class="bias-hero-card">
+            <div class="bias-hero-content">
+              <div class="bias-label-row">
+                <span>AI Macroeconomic Bias</span>
+                <span class="info-badge">i</span>
+              </div>
+              <div class="bias-status">
+                <span>BULLISH</span>
+                <span>&#9650;</span>
+              </div>
+              <div class="bias-confidence">Confidence: 87.4%</div>
+            </div>
+            <div class="globe-visual" aria-hidden="true">
+              <div class="globe-orbit"></div>
+              <span class="globe-node n1"></span>
+              <span class="globe-node n2"></span>
+              <span class="globe-node n3"></span>
+            </div>
+          </div>
+
+          <div class="insight-card">
+            <div>
+              <div class="insight-header">&#128161; AI Insight</div>
+              <p class="insight-body" id="aiInsightText" style="margin-top: 8px;">
+                Global liquidity is improving, supporting risk assets and gold upside in the short term.
+              </p>
+            </div>
+            <div class="insight-footer">
+              <span>&#128337;</span>
+              <span id="lastUpdatedText">Last Updated: 25 Nov 2026, 12:28 UTC</span>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
 
-    <div id="alertBanner" class="alert-banner"></div>
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-left">
+              <div class="metric-icon icon-slate">&#9636;</div>
+              <div>
+                <div class="metric-title">Inflation Sentiment</div>
+                <div class="metric-sub sub-neutral">&#9670; Neutral</div>
+              </div>
+            </div>
+            <div class="metric-right">
+              <div class="metric-value">52.1%</div>
+              <svg class="sparkline-svg" viewBox="0 0 100 38" fill="none">
+                <polyline points="2,24 18,22 34,27 52,18 68,20 84,14 98,17" stroke="#93c5fd" stroke-width="2.4" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
 
-    <div class="card center">
-      <div style="font-size:0.72rem;color:#94a3b8;text-transform:uppercase;">Full Scope Bias Score</div>
-      <div id="score" class="score">--</div>
-      <div id="status" class="badge">Syncing...</div>
-      <div id="riskWarn" class="warn">Risk-Off Exception Active: War risk lifting Gold alongside DXY</div>
-      <div class="cont-box">
-        <div class="cont-top">
-          <span id="contVerdict">+50 Continuation Check</span>
-          <span id="contProb">--%</span>
+          <div class="metric-card">
+            <div class="metric-left">
+              <div class="metric-icon icon-green">&#8599;</div>
+              <div>
+                <div class="metric-title">Growth Outlook</div>
+                <div class="metric-sub sub-positive">&#9650; Positive</div>
+              </div>
+            </div>
+            <div class="metric-right">
+              <div class="metric-value">68.7%</div>
+              <svg class="sparkline-svg" viewBox="0 0 100 38" fill="none">
+                <polyline points="2,32 18,28 34,22 50,25 66,14 82,11 98,7" stroke="#4ade80" stroke-width="2.4" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-left">
+              <div class="metric-icon icon-cyan">&#128167;</div>
+              <div>
+                <div class="metric-title">Liquidity Trend</div>
+                <div class="metric-sub sub-expanding">&#9650; Expanding</div>
+              </div>
+            </div>
+            <div class="metric-right">
+              <div class="metric-value">74.3%</div>
+              <svg class="sparkline-svg" viewBox="0 0 100 38" fill="none">
+                <polyline points="2,31 16,26 30,27 46,18 62,21 78,12 98,8" stroke="#38bdf8" stroke-width="2.4" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-left">
+              <div class="metric-icon icon-gold">%</div>
+              <div>
+                <div class="metric-title">Rate Sentiment</div>
+                <div class="metric-sub sub-cautious">&#9670; Cautious</div>
+              </div>
+            </div>
+            <div class="metric-right">
+              <div class="metric-value">41.9%</div>
+              <svg class="sparkline-svg" viewBox="0 0 100 38" fill="none">
+                <polyline points="2,28 18,24 34,26 50,19 66,22 84,15 98,12" stroke="#facc15" stroke-width="2.4" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
         </div>
-        <div id="contReason" class="cont-note">Evaluating momentum and rate/USD pressure...</div>
-      </div>
-    </div>
 
-    <div class="card">
-      <div class="sec-head"><span>1. USD & Rates</span><span id="catUsdRates">--</span></div>
-      <div id="listUsdRates"></div>
-    </div>
+        <div class="bottom-grid">
+          <div class="panel-box">
+            <div class="panel-header">
+              <div class="panel-title-wrap">&#10148; Latest AI Signals</div>
+              <button class="view-all-btn" id="viewAllSignalsBtn" type="button">View All &rarr;</button>
+            </div>
 
-    <div class="card">
-      <div class="sec-head"><span>2. Inflation, Labor & Growth</span><span id="catMacroLabor">--</span></div>
-      <div id="listMacroLabor"></div>
-    </div>
+            <div class="signal-list">
+              <div class="signal-row">
+                <div class="signal-left">
+                  <span class="signal-dot dot-bullish"></span>
+                  <div>
+                    <div class="signal-meta">25 Nov 2026, 12:28 UTC | GOLD (XAUUSD)</div>
+                    <div class="signal-desc">Liquidity sweep confirmed. Target: 3360-3380</div>
+                  </div>
+                </div>
+                <span class="tag-pill tag-bullish">Bullish</span>
+              </div>
 
-    <div class="card">
-      <div class="sec-head"><span>3. Global Gold Demand</span><span id="catDemand">--</span></div>
-      <div id="listDemand"></div>
-    </div>
+              <div class="signal-row">
+                <div class="signal-left">
+                  <span class="signal-dot dot-neutral"></span>
+                  <div>
+                    <div class="signal-meta">25 Nov 2026, 11:47 UTC | EURUSD</div>
+                    <div class="signal-desc">Range-bound. Watch 1.1550 breakout.</div>
+                  </div>
+                </div>
+                <span class="tag-pill tag-neutral">Neutral</span>
+              </div>
 
-    <div class="card">
-      <div class="sec-head"><span>4. Positioning & Geopolitics</span><span id="catPosGeo">--</span></div>
-      <div id="listPosGeo"></div>
-    </div>
+              <div class="signal-row">
+                <div class="signal-left">
+                  <span class="signal-dot dot-cautious"></span>
+                  <div>
+                    <div class="signal-meta">25 Nov 2026, 10:35 UTC | GBPUSD</div>
+                    <div class="signal-desc">Weak momentum. Await confirmation.</div>
+                  </div>
+                </div>
+                <span class="tag-pill tag-cautious">Cautious</span>
+              </div>
+            </div>
+          </div>
 
-    <div class="card">
-      <div class="sec-head"><span>5. Session Bias Log</span><span id="logCount">0</span></div>
-      <div id="historyList"><div style="font-size:0.76rem;color:#94a3b8;">Waiting for score updates...</div></div>
-    </div>
+          <div class="panel-box">
+            <div class="panel-header">
+              <div class="panel-title-wrap">&#9776; Market Overview</div>
+            </div>
+            <div class="market-tabs" role="tablist">
+              <button class="market-tab active" data-tab="forex" type="button">Forex</button>
+              <button class="market-tab" data-tab="gold" type="button">Gold</button>
+              <button class="market-tab" data-tab="indices" type="button">Indices</button>
+              <button class="market-tab" data-tab="crypto" type="button">Crypto</button>
+            </div>
+            <div class="market-rows" id="marketRows">
+              <div class="market-row">
+                <span class="pair-symbol">EURUSD</span>
+                <span class="pair-price">1.1552</span>
+                <span class="pair-change-pos">&#9650; +0.12%</span>
+                <svg viewBox="0 0 70 24" fill="none"><polyline points="2,18 16,15 30,16 44,10 56,12 68,6" stroke="#4ade80" stroke-width="2"/></svg>
+              </div>
+              <div class="market-row">
+                <span class="pair-symbol">GBPUSD</span>
+                <span class="pair-price">1.3217</span>
+                <span class="pair-change-pos">&#9650; +0.08%</span>
+                <svg viewBox="0 0 70 24" fill="none"><polyline points="2,19 18,16 32,14 48,15 58,9 68,7" stroke="#4ade80" stroke-width="2"/></svg>
+              </div>
+              <div class="market-row">
+                <span class="pair-symbol">XAUUSD</span>
+                <span class="pair-price">3,628.40</span>
+                <span class="pair-change-pos">&#9650; +0.35%</span>
+                <svg viewBox="0 0 70 24" fill="none"><polyline points="2,20 16,17 32,18 46,11 58,8 68,5" stroke="#facc15" stroke-width="2"/></svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="view-panel" id="view-markets"><div class="panel-box"><div class="panel-title-wrap">Markets Watchlist</div><p class="insight-body">Use the category tabs on Dashboard or the top filter to inspect Forex, Gold, Indices, and Crypto.</p></div></section>
+      <section class="view-panel" id="view-insights"><div class="panel-box"><div class="panel-title-wrap">AI Macro Insights</div><p class="insight-body">Global liquidity is improving, supporting risk assets and gold upside in the short term.</p></div></section>
+      <section class="view-panel" id="view-reports"><div class="panel-box"><div class="panel-title-wrap">Macro Reports</div><p class="insight-body">Daily macro briefings and sentiment snapshots for AURIXIS.</p></div></section>
+      <section class="view-panel" id="view-settings"><div class="panel-box"><div class="panel-title-wrap">Workspace Settings</div><p class="insight-body">Connected to your Render cloud deployment.</p></div></section>
+      <section class="view-panel" id="view-about"><div class="panel-box"><div class="panel-title-wrap">About AURIXIS</div><p class="insight-body">AURIXIS AI Macroeconomic Intelligence dashboard.</p></div></section>
+    </main>
   </div>
 
+  <footer class="pro-banner">
+    <div class="pro-banner-left">
+      <span>&#9813;</span><span>AURIXIS Pro Intelligence</span>
+      <span class="muted">&bull; Real-Time Macro Analysis &bull; Smarter Decisions, Greater Opportunities</span>
+    </div>
+    <div class="pro-banner-right">&#9889; Powered by Advanced AI</div>
+  </footer>
+
+  <nav class="mobile-bottom-nav" aria-label="Mobile Navigation">
+    <button class="mobile-nav-btn active" data-view="dashboard" type="button"><span>&#8962;</span><span>Home</span></button>
+    <button class="mobile-nav-btn" data-view="markets" type="button"><span>&#9776;</span><span>Markets</span></button>
+    <button class="mobile-nav-btn" data-view="insights" type="button"><span>&#128172;</span><span>Insights</span></button>
+    <button class="mobile-nav-btn" data-view="settings" type="button"><span>&#9881;</span><span>Settings</span></button>
+  </nav>
+
   <script>
-    const GROUPS = {
-      listUsdRates: [
-        ["dxy", "DXY (Dollar Index)"],
-        ["interestRate", "Interest Rate"],
-        ["realYields10y", "Real Yields (10Y)"]
+    const MARKET_DATA = {
+      forex: [
+        { symbol: "EURUSD", price: "1.1552", change: "▲ +0.12%", pos: true, color: "#4ade80", points: "2,18 16,15 30,16 44,10 56,12 68,6" },
+        { symbol: "GBPUSD", price: "1.3217", change: "▲ +0.08%", pos: true, color: "#4ade80", points: "2,19 18,16 32,14 48,15 58,9 68,7" },
+        { symbol: "XAUUSD", price: "3,628.40", change: "▲ +0.35%", pos: true, color: "#facc15", points: "2,20 16,17 32,18 46,11 58,8 68,5" }
       ],
-      listMacroLabor: [
-        ["cpi", "CPI (Consumer Price Index)"],
-        ["pce", "PCE Price Index"],
-        ["nfp", "Non-Farm Payrolls (NFP)"],
-        ["unemploymentRate", "Unemployment Rate"],
-        ["gdpGrowth", "GDP Growth"],
-        ["ismPmi", "ISM Mfg & Services PMI"],
-        ["initialJobClaims", "Initial Jobless Claims"]
+      gold: [
+        { symbol: "XAUUSD", price: "3,628.40", change: "▲ +0.35%", pos: true, color: "#facc15", points: "2,20 16,17 32,18 46,11 58,8 68,5" },
+        { symbol: "XAUEUR", price: "3,140.15", change: "▲ +0.24%", pos: true, color: "#4ade80", points: "2,18 18,16 34,13 50,11 68,6" },
+        { symbol: "XAGUSD", price: "34.82", change: "▲ +0.19%", pos: true, color: "#38bdf8", points: "2,19 16,18 32,15 48,12 68,8" }
       ],
-      listDemand: [
-        ["centralBankPurchases", "Central Bank Gold Purchases"],
-        ["spdrEtfHoldings", "SPDR Gold ETF Holdings"],
-        ["chinaGoldImports", "China Gold Imports"],
-        ["indiaGoldImports", "India Gold Imports"]
+      indices: [
+        { symbol: "US30", price: "44,820.0", change: "▲ +0.29%", pos: true, color: "#4ade80", points: "2,19 18,16 34,14 50,10 68,6" },
+        { symbol: "NAS100", price: "21,495.5", change: "▲ +0.44%", pos: true, color: "#4ade80", points: "2,21 16,17 32,13 48,9 68,4" },
+        { symbol: "DXY", price: "103.42", change: "▼ -0.14%", pos: false, color: "#f87171", points: "2,6 18,9 32,12 48,15 68,19" }
       ],
-      listPosGeo: [
-        ["cotReport", "COT Report Positioning"],
-        ["warRisk", "War & Geopolitical Risk"]
+      crypto: [
+        { symbol: "BTCUSD", price: "98,420.0", change: "▲ +1.18%", pos: true, color: "#4ade80", points: "2,20 18,15 34,12 50,9 68,4" },
+        { symbol: "ETHUSD", price: "3,418.50", change: "▲ +0.76%", pos: true, color: "#38bdf8", points: "2,19 18,16 34,14 50,10 68,6" },
+        { symbol: "SOLUSD", price: "214.80", change: "▲ +1.42%", pos: true, color: "#facc15", points: "2,21 18,16 34,11 50,8 68,4" }
       ]
     };
 
-    Object.entries(GROUPS).forEach(([containerId, items]) => {
-      const box = document.getElementById(containerId);
-      box.innerHTML = items.map(([key, title]) => `
-        <div class="row">
-          <div class="label"><span>${title}</span><span id="val_${key}">--</span></div>
-          <div class="track"><div id="bar_${key}" class="fill"></div></div>
+    function renderMarketRows(category) {
+      const rows = MARKET_DATA[category] || MARKET_DATA.forex;
+      document.getElementById("marketRows").innerHTML = rows.map(item => `
+        <div class="market-row">
+          <span class="pair-symbol">${item.symbol}</span>
+          <span class="pair-price">${item.price}</span>
+          <span class="${item.pos ? "pair-change-pos" : "pair-change-neg"}">${item.change}</span>
+          <svg viewBox="0 0 70 24" fill="none"><polyline points="${item.points}" stroke="${item.color}" stroke-width="2" stroke-linecap="round"/></svg>
         </div>
       `).join("");
+    }
+
+    document.querySelectorAll(".market-tab").forEach(tab => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".market-tab").forEach(t => t.classList.remove("active"));
+        tab.classList.add("active");
+        renderMarketRows(tab.dataset.tab);
+      });
     });
 
-    let soundEnabled = false;
-    let audioCtx = null;
-    let lastAlertKey = "";
+    function switchView(viewName) {
+      document.querySelectorAll(".view-panel").forEach(p => p.classList.toggle("active", p.id === `view-${viewName}`));
+      document.querySelectorAll(".nav-item, .mobile-nav-btn").forEach(b => b.classList.toggle("active", b.dataset.view === viewName));
+    }
 
-    document.getElementById("soundBtn").addEventListener("click", () => {
-      soundEnabled = !soundEnabled;
-      const btn = document.getElementById("soundBtn");
-      btn.textContent = soundEnabled ? "Sound: ON" : "Sound: OFF";
-      btn.classList.toggle("active", soundEnabled);
-      if (soundEnabled && !audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        playChime(660);
-      }
+    document.querySelectorAll(".nav-item, .mobile-nav-btn").forEach(btn => {
+      btn.addEventListener("click", () => switchView(btn.dataset.view));
     });
 
-    function playChime(freq = 780) {
-      if (!soundEnabled || !audioCtx) return;
-      try {
-        if (audioCtx.state === "suspended") audioCtx.resume();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = "sine";
-        osc.frequency.value = freq;
-        gain.gain.value = 0.08;
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start();
-        setTimeout(() => osc.stop(), 240);
-      } catch (_) {}
-    }
+    document.getElementById("viewAllSignalsBtn").addEventListener("click", () => switchView("insights"));
 
-    function pts(n) { return (n >= 0 ? "+" : "") + n + " pts"; }
+    document.getElementById("refreshBtn").addEventListener("click", () => {
+      const now = new Date();
+      document.getElementById("lastUpdatedText").textContent = `Last Updated: ${now.toUTCString().replace("GMT", "UTC").slice(5, 25)} UTC`;
+    });
 
-    function handleAlerts(d) {
-      const banner = document.getElementById("alertBanner");
-      let message = "";
-      let isBull = d.score >= 50;
-
-      if (d.score >= 50) {
-        message = `Strong Bullish Signal (${d.score >= 0 ? "+" : ""}${d.score}) — ${d.continuation.verdict} (${d.continuation.probabilityPct}%).`;
-        isBull = true;
-      } else if (d.score <= -50) {
-        message = `Strong Bearish Signal (${d.score}) — Heavy macro/rate headwinds for XAU/USD.`;
-        isBull = false;
-      } else if (d.riskOffException) {
-        message = `Risk-Off Exception Active — Safe-haven demand overriding USD pressure.`;
-        isBull = true;
-      }
-
-      if (message) {
-        banner.style.display = "block";
-        banner.className = "alert-banner" + (isBull ? " bull" : "");
-        banner.textContent = message;
-        const alertKey = `${d.score}|${d.riskOffException}`;
-        if (alertKey !== lastAlertKey) {
-          lastAlertKey = alertKey;
-          playChime(isBull ? 840 : 440);
-        }
-      } else {
-        banner.style.display = "none";
-        lastAlertKey = "";
-      }
-    }
-
-    async function loadHistory() {
-      try {
-        const res = await fetch("/api/v1/history");
-        const h = await res.json();
-        const list = document.getElementById("historyList");
-        document.getElementById("logCount").textContent = (h.entries || []).length + " entries";
-        if (!h.entries || h.entries.length === 0) return;
-
-        list.innerHTML = h.entries.slice(0, 8).map(item => {
-          const t = item.time ? new Date(item.time).toLocaleTimeString() : "--";
-          const sVal = (item.score > 0 ? "+" : "") + item.score;
-          const pVal = item.price ? " · $" + Number(item.price).toFixed(2) : "";
-          return `
-            <div class="log-item">
-              <div><span class="tag">${item.session || "AUTO"}</span><span>${t}${pVal}</span></div>
-              <strong>${sVal} (${item.status})</strong>
-            </div>
-          `;
-        }).join("");
-      } catch (_) {}
-    }
-
-    async function autoTick() {
-      try {
-        const res = await fetch("/api/v1/auto");
-        const d = await res.json();
-
-        document.getElementById("sessionSub").textContent =
-          `Full Scope XAU/USD · ${d.session || "AUTO"} Session`;
-
-        const col = d.score >= 20 ? "#22c55e" : d.score <= -20 ? "#ef4444" : "#eab308";
-        const scoreEl = document.getElementById("score");
-        scoreEl.textContent = (d.score > 0 ? "+" : "") + d.score;
-        scoreEl.style.color = col;
-
-        const statusEl = document.getElementById("status");
-        statusEl.textContent = d.status;
-        statusEl.style.color = col;
-        statusEl.style.background = col + "22";
-
-        if (d.continuation) {
-          document.getElementById("contVerdict").textContent = d.continuation.verdict;
-          document.getElementById("contProb").textContent = d.continuation.probabilityPct + "%";
-          document.getElementById("contReason").textContent = d.continuation.reason;
-        }
-
-        document.getElementById("riskWarn").style.display = d.riskOffException ? "block" : "none";
-        handleAlerts(d);
-
-        const priceEl = document.getElementById("xauPrice");
-        const metaEl = document.getElementById("xauMeta");
-        const t = d.updatedAt ? new Date(d.updatedAt).toLocaleTimeString() : "live";
-
-        if (d.price !== null && d.price !== undefined) {
-          const numPrice = Number(d.price);
-          priceEl.textContent = "$" + numPrice.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-          metaEl.textContent = (d.source || "Live") + " · " + t;
-        } else {
-          priceEl.textContent = "AUTO #" + (d.tickCount || 1);
-          metaEl.textContent = "Full Scope · " + t;
-        }
-
-        document.getElementById("catUsdRates").textContent = pts(d.categories.usdRates);
-        document.getElementById("catMacroLabor").textContent = pts(d.categories.macroLabor);
-        document.getElementById("catDemand").textContent = pts(d.categories.physicalDemand);
-        document.getElementById("catPosGeo").textContent = pts(d.categories.positioningGeo);
-
-        Object.entries(d.metrics).forEach(([key, val]) => {
-          const vEl = document.getElementById("val_" + key);
-          const bEl = document.getElementById("bar_" + key);
-          if (vEl) vEl.textContent = (val > 0 ? "+" : "") + val.toFixed(2);
-          if (bEl) {
-            const min = key === "warRisk" ? 0 : -1;
-            const pct = Math.max(0, Math.min(100, ((val - min) / (1 - min)) * 100));
-            bEl.style.width = pct + "%";
-          }
-        });
-
-        loadHistory();
-      } catch (e) {
-        document.getElementById("xauMeta").textContent = "Reconnecting...";
-      }
-    }
-
-    autoTick();
-    setInterval(autoTick, 10000);
+    document.getElementById("marketFilter").addEventListener("change", (e) => {
+      const val = MARKET_DATA[e.target.value] ? e.target.value : "forex";
+      document.querySelectorAll(".market-tab").forEach(t => t.classList.toggle("active", t.dataset.tab === val));
+      renderMarketRows(val);
+    });
   </script>
 </body>
 </html>
