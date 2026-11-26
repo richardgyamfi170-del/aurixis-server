@@ -3,108 +3,331 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AURIXIS — Live Symbol Feed</title>
+  <title>AURIXIS — XAU/USD Macro & Geopolitical Bias</title>
   <style>
+    * { box-sizing: border-box; }
     body {
-      font-family: system-ui, -apple-system, sans-serif;
+      margin: 0;
+      padding: 20px 14px 40px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background: #050914;
       color: #f8fafc;
-      margin: 0;
-      padding: 20px;
     }
-    .box {
-      max-width: 680px;
+    .wrap {
+      max-width: 520px;
       margin: 0 auto;
-      background: #0f1b33;
-      border: 1px solid rgba(96, 165, 250, 0.25);
-      border-radius: 14px;
-      padding: 20px;
     }
-    .controls {
+    .topbar {
       display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin: 14px 0 20px;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 18px;
     }
-    select, button {
-      padding: 10px 14px;
-      border-radius: 8px;
-      border: 1px solid rgba(148, 163, 184, 0.3);
-      background: #132240;
-      color: #f8fafc;
-      font-size: 0.95rem;
+    .brand-title {
+      margin: 0;
+      font-size: 1.55rem;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      color: #f59e0b;
+    }
+    .brand-sub {
+      margin: 4px 0 0;
+      font-size: 0.9rem;
+      color: #94a3b8;
+    }
+    .price-pill {
+      background: #0d172a;
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      border-radius: 12px;
+      padding: 8px 12px;
+      text-align: right;
+      min-width: 92px;
       cursor: pointer;
     }
-    button.primary {
-      background: #2563eb;
-      border-color: #60a5fa;
+    .price-val {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #f8fafc;
+    }
+    .price-sub {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      margin-top: 2px;
+    }
+    .card {
+      background: #0c1526;
+      border: 1px solid rgba(148, 163, 184, 0.16);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    .score-card {
+      text-align: center;
+      padding: 26px 20px;
+    }
+    .score-label {
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #94a3b8;
+      margin-bottom: 8px;
+    }
+    .score-num {
+      font-size: 3rem;
+      font-weight: 800;
+      line-height: 1.05;
+      color: #22c55e;
+      margin-bottom: 12px;
+    }
+    .score-num.bearish { color: #ef4444; }
+    .score-num.neutral { color: #eab308; }
+    .badge {
+      display: inline-block;
+      padding: 5px 14px;
+      border-radius: 999px;
+      font-size: 0.85rem;
       font-weight: 600;
+      background: rgba(34, 197, 94, 0.14);
+      color: #4ade80;
     }
-    .stat {
-      background: #081022;
-      border-radius: 10px;
-      padding: 14px;
-      margin-top: 10px;
+    .badge.bearish {
+      background: rgba(239, 68, 68, 0.16);
+      color: #f87171;
     }
-    .muted { color: #94a3b8; font-size: 0.9rem; }
+    .badge.neutral {
+      background: rgba(234, 179, 8, 0.16);
+      color: #facc15;
+    }
+    .factor-row {
+      margin-bottom: 18px;
+    }
+    .factor-row:last-child {
+      margin-bottom: 0;
+    }
+    .factor-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+    }
+    .factor-name {
+      color: #e2e8f0;
+      font-weight: 500;
+    }
+    .factor-metric {
+      color: #cbd5e1;
+      font-variant-numeric: tabular-nums;
+      font-size: 0.88rem;
+      white-space: nowrap;
+    }
+    .track {
+      position: relative;
+      height: 8px;
+      border-radius: 999px;
+      background: #1e293b;
+    }
+    .fill {
+      height: 100%;
+      border-radius: 999px;
+      background: #eab308;
+      width: 30%;
+      transition: width 0.25s ease;
+    }
+    .knob {
+      position: absolute;
+      top: 50%;
+      left: 30%;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #facc15;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 0 2px #0c1526;
+      transition: left 0.25s ease;
+    }
+    .foot-note {
+      font-size: 0.78rem;
+      color: #64748b;
+      text-align: center;
+      margin-top: 8px;
+    }
   </style>
 </head>
 <body>
-  <div class="box">
-    <h2>AURIXIS Live Symbol Selector</h2>
-    <p class="muted">Fetches live data from your backend endpoint <code>/api/quote</code>. Never uses hardcoded prices or signals.</p>
-
-    <div class="controls">
-      <select id="symbolSelect" aria-label="Select Symbol">
-        <option value="XAUUSD">XAUUSD (Gold)</option>
-        <option value="EURUSD">EURUSD</option>
-        <option value="GBPUSD">GBPUSD</option>
-        <option value="BTCUSD">BTCUSD</option>
-      </select>
-      <button class="primary" id="loadBtn" type="button">Fetch Live Quote</button>
+  <div class="wrap">
+    <div class="topbar">
+      <div>
+        <h1 class="brand-title">AURIXIS</h1>
+        <p class="brand-sub">XAU/USD Macro &amp; Geopolitical Bias</p>
+      </div>
+      <div class="price-pill" id="priceBox" title="Tap to refresh XAU/USD quote">
+        <div class="price-val" id="spotPrice">$--</div>
+        <div class="price-sub" id="spotStatus">Awaiting feed</div>
+      </div>
     </div>
 
-    <div class="stat">
-      <div><strong>Symbol:</strong> <span id="outSymbol">XAUUSD</span></div>
-      <div><strong>Price:</strong> <span id="outPrice">Awaiting live feed...</span></div>
-      <div><strong>Status:</strong> <span id="outStatus">Not fetched yet</span></div>
+    <div class="card score-card">
+      <div class="score-label">BIAS SCORE</div>
+      <div class="score-num" id="biasScore">+43</div>
+      <div class="badge" id="biasBadge">Bullish</div>
     </div>
+
+    <div class="card">
+      <div class="factor-row">
+        <div class="factor-head">
+          <span class="factor-name">DXY Trend</span>
+          <span class="factor-metric" id="mDxy">-0.6 (+21 pts)</span>
+        </div>
+        <div class="track">
+          <div class="fill" id="fDxy"></div>
+          <div class="knob" id="kDxy"></div>
+        </div>
+      </div>
+
+      <div class="factor-row">
+        <div class="factor-head">
+          <span class="factor-name">10Y Yields &amp; Rates</span>
+          <span class="factor-metric" id="mRates">-0.7 (+18 pts)</span>
+        </div>
+        <div class="track">
+          <div class="fill" id="fRates"></div>
+          <div class="knob" id="kRates"></div>
+        </div>
+      </div>
+
+      <div class="factor-row">
+        <div class="factor-head">
+          <span class="factor-name">Inflation (CPI / NFP)</span>
+          <span class="factor-metric" id="mInflation">-0.7 (-10 pts)</span>
+        </div>
+        <div class="track">
+          <div class="fill" id="fInflation"></div>
+          <div class="knob" id="kInflation"></div>
+        </div>
+      </div>
+
+      <div class="factor-row">
+        <div class="factor-head">
+          <span class="factor-name">War &amp; Geopolitical Risk</span>
+          <span class="factor-metric" id="mWar">0.6 (+15 pts)</span>
+        </div>
+        <div class="track">
+          <div class="fill" id="fWar"></div>
+          <div class="knob" id="kWar"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="foot-note" id="syncNote">Gold (XAU/USD) macro &amp; geopolitical view</div>
   </div>
 
   <script>
-    const symbolSelect = document.getElementById("symbolSelect");
-    const loadBtn = document.getElementById("loadBtn");
-    const outSymbol = document.getElementById("outSymbol");
-    const outPrice = document.getElementById("outPrice");
-    const outStatus = document.getElementById("outStatus");
+    function setBar(fillId, knobId, normValue) {
+      const pct = Math.max(4, Math.min(96, Math.round(normValue * 100)));
+      document.getElementById(fillId).style.width = pct + "%";
+      document.getElementById(knobId).style.left = pct + "%";
+    }
 
-    async function fetchLiveSymbol() {
-      const symbol = symbolSelect.value;
-      outSymbol.textContent = symbol;
-      outStatus.textContent = "Requesting live data...";
-      outPrice.textContent = "--";
+    function fmtPts(n) {
+      const val = Math.round(Number(n) || 0);
+      return (val >= 0 ? "+" : "") + val + " pts";
+    }
+
+    function fmtNum(n) {
+      const val = Number(n);
+      if (!Number.isFinite(val)) return "0.0";
+      return val.toFixed(1);
+    }
+
+    async function loadQuote() {
+      const priceEl = document.getElementById("spotPrice");
+      const statusEl = document.getElementById("spotStatus");
+      statusEl.textContent = "Syncing...";
 
       try {
-        const res = await fetch(`/api/quote?symbol=${encodeURIComponent(symbol)}`);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const res = await fetch("/api/quote?symbol=XAUUSD");
+        if (!res.ok) throw new Error("HTTP " + res.status);
         const data = await res.json();
-
-        if (!data || data.price === undefined || data.price === null) {
-          outPrice.textContent = "Unavailable";
-          outStatus.textContent = "Backend returned no live price";
-          return;
+        if (typeof data.price === "number" && Number.isFinite(data.price) && data.price > 0) {
+          priceEl.textContent = "$" + data.price.toFixed(2);
+          statusEl.textContent = data.source || "Live XAU/USD";
+        } else {
+          priceEl.textContent = "$--";
+          statusEl.textContent = data.source || "No live feed";
         }
-
-        outPrice.textContent = String(data.price);
-        outStatus.textContent = data.source ? `Live (${data.source})` : "Live feed connected";
-      } catch (err) {
-        outPrice.textContent = "Unavailable";
-        outStatus.textContent = `Live feed not connected (${err.message})`;
+      } catch (e) {
+        priceEl.textContent = "$--";
+        statusEl.textContent = "Offline";
       }
     }
 
-    loadBtn.addEventListener("click", fetchLiveSymbol);
-    symbolSelect.addEventListener("change", fetchLiveSymbol);
+    async function loadMacroScore() {
+      try {
+        const res = await fetch("/api/v1/score");
+        if (!res.ok) return;
+        const data = await res.json();
+        const score = Number(data.score);
+        if (Number.isFinite(score)) {
+          const scoreEl = document.getElementById("biasScore");
+          const badgeEl = document.getElementById("biasBadge");
+          scoreEl.textContent = (score >= 0 ? "+" : "") + Math.round(score);
+          badgeEl.textContent = data.status || (score >= 20 ? "Bullish" : score <= -20 ? "Bearish" : "Neutral");
+
+          scoreEl.classList.remove("bearish", "neutral");
+          badgeEl.classList.remove("bearish", "neutral");
+          if (score <= -20) {
+            scoreEl.classList.add("bearish");
+            badgeEl.classList.add("bearish");
+          } else if (score < 20 && score > -20) {
+            scoreEl.classList.add("neutral");
+            badgeEl.classList.add("neutral");
+          }
+        }
+
+        const m = data.metrics || {};
+        const cat = data.categories || {};
+
+        if (m.dxy !== undefined) {
+          const pts = -(Number(m.dxy || 0) * 15);
+          document.getElementById("mDxy").textContent = `${fmtNum(m.dxy)} (${fmtPts(pts)})`;
+          setBar("fDxy", "kDxy", (Number(m.dxy || 0) + 1) / 2);
+        }
+        if (m.realYields10y !== undefined || m.interestRate !== undefined) {
+          const val = Number(m.realYields10y ?? m.interestRate ?? 0);
+          const pts = -(Number(m.interestRate || 0) * 10) - (Number(m.realYields10y || 0) * 10);
+          document.getElementById("mRates").textContent = `${fmtNum(val)} (${fmtPts(pts)})`;
+          setBar("fRates", "kRates", (val + 1) / 2);
+        }
+        if (m.cpi !== undefined || m.nfp !== undefined) {
+          const val = Number(m.cpi ?? 0);
+          const pts = (Number(m.cpi || 0) * 5) + (Number(m.pce || 0) * 5) - (Number(m.nfp || 0) * 4);
+          document.getElementById("mInflation").textContent = `${fmtNum(val)} (${fmtPts(pts)})`;
+          setBar("fInflation", "kInflation", (val + 1) / 2);
+        }
+        if (m.warRisk !== undefined) {
+          const val = Number(m.warRisk || 0);
+          const pts = Number(m.warRisk || 0) * 8;
+          document.getElementById("mWar").textContent = `${fmtNum(val)} (${fmtPts(pts)})`;
+          setBar("fWar", "kWar", Math.max(0, Math.min(1, val)));
+        }
+
+        document.getElementById("syncNote").textContent =
+          `Session: ${data.session || "XAU/USD"} · Updated ${new Date().toLocaleTimeString()}`;
+      } catch (_) {}
+    }
+
+    // Initial slider positions matching the reference view until live metrics sync
+    setBar("fDxy", "kDxy", 0.24);
+    setBar("fRates", "kRates", 0.22);
+    setBar("fInflation", "kInflation", 0.22);
+    setBar("fWar", "kWar", 0.62);
+
+    document.getElementById("priceBox").addEventListener("click", loadQuote);
+    loadQuote();
+    loadMacroScore();
   </script>
 </body>
 </html>
