@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aurixis — Full Scope XAU/USD</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #090d16; color: #f8fafc; font-family: system-ui, sans-serif; padding: 14px; }
+    .wrap { max-width: 520px; margin: 0 auto; }
+    .top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; gap: 10px; }
+    h1 { margin: 0 0 2px 0; font-size: 1.45rem; color: #fbbf24; }
+    .sub { color: #94a3b8; font-size: 0.78rem; }
+    .controls { display: flex; gap: 8px; align-items: center; }
+    .sound-btn {
+      background: #1e293b; color: #f8fafc; border: 1px solid #334155;
+      border-radius: 10px; padding: 8px 10px; font-size: 0.75rem; font-weight: 700; cursor: pointer;
+    }
+    .sound-btn.active { background: rgba(34, 197, 94, 0.16); border-color: #22c55e; color: #4ade80; }
+    .live-box { text-align: right; background: #111827; border: 1px solid #1f2937; border-radius: 10px; padding: 8px 12px; min-width: 112px; }
+    .live-price { font-size: 1rem; font-weight: 700; color: #fbbf24; }
+    .live-meta { font-size: 0.68rem; color: #94a3b8; }
+    .alert-banner {
+      display: none; background: rgba(239, 68, 68, 0.16); border: 1px solid #ef4444;
+      color: #fca5a5; border-radius: 10px; padding: 10px 12px; font-size: 0.8rem;
+      font-weight: 600; margin-bottom: 12px;
+    }
+    .alert-banner.bull { background: rgba(34, 197, 94, 0.16); border-color: #22c55e; color: #86efac; }
+    .card { background: #111827; border: 1px solid #1f2937; border-radius: 12px; padding: 14px; margin-bottom: 12px; }
+    .center { text-align: center; }
+    .score { font-size: 2.8rem; font-weight: 800; margin: 4px 0; }
+    .badge { display: inline-block; padding: 4px 12px; border-radius: 999px; font-weight: 700; font-size: 0.85rem; }
+    .cont-box { margin-top: 12px; padding-top: 10px; border-top: 1px solid #1e293b; text-align: left; }
+    .cont-top { display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem; font-weight: 700; color: #fbbf24; }
+    .cont-note { margin-top: 4px; font-size: 0.75rem; color: #cbd5e1; }
+    .warn { margin-top: 8px; font-size: 0.78rem; color: #fbbf24; background: rgba(251,191,36,0.12); padding: 7px; border-radius: 6px; display: none; }
+    .sec-head { display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem; font-weight: 700; color: #38bdf8; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.03em; }
+    .row { margin-bottom: 10px; }
+    .row:last-child { margin-bottom: 0; }
+    .label { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 4px; color: #e2e8f0; }
+    .track { height: 6px; background: #1e293b; border-radius: 999px; overflow: hidden; }
+    .fill { height: 100%; background: #fbbf24; width: 50%; transition: width 0.35s ease; }
+    .log-item { display: flex; justify-content: space-between; align-items: center; font-size: 0.76rem; padding: 6px 0; border-bottom: 1px solid #1e293b; color: #cbd5e1; }
+    .log-item:last-child { border-bottom: none; }
+    .tag { font-size: 0.68rem; font-weight: 700; padding: 2px 6px; border-radius: 6px; background: #1e293b; color: #38bdf8; margin-right: 6px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div>
+        <h1>AURIXIS</h1>
+        <div id="sessionSub" class="sub">Full Scope XAU/USD Engine (16 Metrics)</div>
+      </div>
+      <div class="controls">
+        <button id="soundBtn" class="sound-btn" type="button">Sound: OFF</button>
+        <div class="live-box">
+          <div id="xauPrice" class="live-price">AUTO</div>
+          <div id="xauMeta" class="live-meta">Starting...</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="alertBanner" class="alert-banner"></div>
+
+    <div class="card center">
+      <div style="font-size:0.72rem;color:#94a3b8;text-transform:uppercase;">Full Scope Bias Score</div>
+      <div id="score" class="score">--</div>
+      <div id="status" class="badge">Syncing...</div>
+      <div id="riskWarn" class="warn">Risk-Off Exception Active: War risk lifting Gold alongside DXY</div>
+      <div class="cont-box">
+        <div class="cont-top">
+          <span id="contVerdict">+50 Continuation Check</span>
+          <span id="contProb">--%</span>
+        </div>
+        <div id="contReason" class="cont-note">Evaluating momentum and rate/USD pressure...</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="sec-head"><span>1. USD & Rates</span><span id="catUsdRates">--</span></div>
+      <div id="listUsdRates"></div>
+    </div>
+
+    <div class="card">
+      <div class="sec-head"><span>2. Inflation, Labor & Growth</span><span id="catMacroLabor">--</span></div>
+      <div id="listMacroLabor"></div>
+    </div>
+
+    <div class="card">
+      <div class="sec-head"><span>3. Global Gold Demand</span><span id="catDemand">--</span></div>
+      <div id="listDemand"></div>
+    </div>
+
+    <div class="card">
+      <div class="sec-head"><span>4. Positioning & Geopolitics</span><span id="catPosGeo">--</span></div>
+      <div id="listPosGeo"></div>
+    </div>
+
+    <div class="card">
+      <div class="sec-head"><span>5. Session Bias Log</span><span id="logCount">0</span></div>
+      <div id="historyList"><div style="font-size:0.76rem;color:#94a3b8;">Waiting for score updates...</div></div>
+    </div>
+  </div>
+
+  <script>
+    const GROUPS = {
+      listUsdRates: [
+        ["dxy", "DXY (Dollar Index)"],
+        ["interestRate", "Interest Rate"],
+        ["realYields10y", "Real Yields (10Y)"]
+      ],
+      listMacroLabor: [
+        ["cpi", "CPI (Consumer Price Index)"],
+        ["pce", "PCE Price Index"],
+        ["nfp", "Non-Farm Payrolls (NFP)"],
+        ["unemploymentRate", "Unemployment Rate"],
+        ["gdpGrowth", "GDP Growth"],
+        ["ismPmi", "ISM Mfg & Services PMI"],
+        ["initialJobClaims", "Initial Jobless Claims"]
+      ],
+      listDemand: [
+        ["centralBankPurchases", "Central Bank Gold Purchases"],
+        ["spdrEtfHoldings", "SPDR Gold ETF Holdings"],
+        ["chinaGoldImports", "China Gold Imports"],
+        ["indiaGoldImports", "India Gold Imports"]
+      ],
+      listPosGeo: [
+        ["cotReport", "COT Report Positioning"],
+        ["warRisk", "War & Geopolitical Risk"]
+      ]
+    };
+
+    Object.entries(GROUPS).forEach(([containerId, items]) => {
+      const box = document.getElementById(containerId);
+      box.innerHTML = items.map(([key, title]) => `
+        <div class="row">
+          <div class="label"><span>${title}</span><span id="val_${key}">--</span></div>
+          <div class="track"><div id="bar_${key}" class="fill"></div></div>
+        </div>
+      `).join("");
+    });
+
+    let soundEnabled = false;
+    let audioCtx = null;
+    let lastAlertKey = "";
+
+    document.getElementById("soundBtn").addEventListener("click", () => {
+      soundEnabled = !soundEnabled;
+      const btn = document.getElementById("soundBtn");
+      btn.textContent = soundEnabled ? "Sound: ON" : "Sound: OFF";
+      btn.classList.toggle("active", soundEnabled);
+      if (soundEnabled && !audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        playChime(660);
+      }
+    });
+
+    function playChime(freq = 780) {
+      if (!soundEnabled || !audioCtx) return;
+      try {
+        if (audioCtx.state === "suspended") audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = "sine";
+        osc.frequency.value = freq;
+        gain.gain.value = 0.08;
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        setTimeout(() => osc.stop(), 240);
+      } catch (_) {}
+    }
+
+    function pts(n) { return (n >= 0 ? "+" : "") + n + " pts"; }
+
+    function handleAlerts(d) {
+      const banner = document.getElementById("alertBanner");
+      let message = "";
+      let isBull = d.score >= 50;
+
+      if (d.score >= 50) {
+        message = `Strong Bullish Signal (${d.score >= 0 ? "+" : ""}${d.score}) — ${d.continuation.verdict} (${d.continuation.probabilityPct}%).`;
+        isBull = true;
+      } else if (d.score <= -50) {
+        message = `Strong Bearish Signal (${d.score}) — Heavy macro/rate headwinds for XAU/USD.`;
+        isBull = false;
+      } else if (d.riskOffException) {
+        message = `Risk-Off Exception Active — Safe-haven demand overriding USD pressure.`;
+        isBull = true;
+      }
+
+      if (message) {
+        banner.style.display = "block";
+        banner.className = "alert-banner" + (isBull ? " bull" : "");
+        banner.textContent = message;
+        const alertKey = `${d.score}|${d.riskOffException}`;
+        if (alertKey !== lastAlertKey) {
+          lastAlertKey = alertKey;
+          playChime(isBull ? 840 : 440);
+        }
+      } else {
+        banner.style.display = "none";
+        lastAlertKey = "";
+      }
+    }
+
+    async function loadHistory() {
+      try {
+        const res = await fetch("/api/v1/history");
+        const h = await res.json();
+        const list = document.getElementById("historyList");
+        document.getElementById("logCount").textContent = (h.entries || []).length + " entries";
+        if (!h.entries || h.entries.length === 0) return;
+
+        list.innerHTML = h.entries.slice(0, 8).map(item => {
+          const t = item.time ? new Date(item.time).toLocaleTimeString() : "--";
+          const sVal = (item.score > 0 ? "+" : "") + item.score;
+          const pVal = item.price ? " · $" + Number(item.price).toFixed(2) : "";
+          return `
+            <div class="log-item">
+              <div><span class="tag">${item.session || "AUTO"}</span><span>${t}${pVal}</span></div>
+              <strong>${sVal} (${item.status})</strong>
+            </div>
+          `;
+        }).join("");
+      } catch (_) {}
+    }
+
+    async function autoTick() {
+      try {
+        const res = await fetch("/api/v1/auto");
+        const d = await res.json();
+
+        document.getElementById("sessionSub").textContent =
+          `Full Scope XAU/USD · ${d.session || "AUTO"} Session`;
+
+        const col = d.score >= 20 ? "#22c55e" : d.score <= -20 ? "#ef4444" : "#eab308";
+        const scoreEl = document.getElementById("score");
+        scoreEl.textContent = (d.score > 0 ? "+" : "") + d.score;
+        scoreEl.style.color = col;
+
+        const statusEl = document.getElementById("status");
+        statusEl.textContent = d.status;
+        statusEl.style.color = col;
+        statusEl.style.background = col + "22";
+
+        if (d.continuation) {
+          document.getElementById("contVerdict").textContent = d.continuation.verdict;
+          document.getElementById("contProb").textContent = d.continuation.probabilityPct + "%";
+          document.getElementById("contReason").textContent = d.continuation.reason;
+        }
+
+        document.getElementById("riskWarn").style.display = d.riskOffException ? "block" : "none";
+        handleAlerts(d);
+
+        const priceEl = document.getElementById("xauPrice");
+        const metaEl = document.getElementById("xauMeta");
+        const t = d.updatedAt ? new Date(d.updatedAt).toLocaleTimeString() : "live";
+
+        if (d.price !== null && d.price !== undefined) {
+          const numPrice = Number(d.price);
+          priceEl.textContent = "$" + numPrice.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+          metaEl.textContent = (d.source || "Live") + " · " + t;
+        } else {
+          priceEl.textContent = "AUTO #" + (d.tickCount || 1);
+          metaEl.textContent = "Full Scope · " + t;
+        }
+
+        document.getElementById("catUsdRates").textContent = pts(d.categories.usdRates);
+        document.getElementById("catMacroLabor").textContent = pts(d.categories.macroLabor);
+        document.getElementById("catDemand").textContent = pts(d.categories.physicalDemand);
+        document.getElementById("catPosGeo").textContent = pts(d.categories.positioningGeo);
+
+        Object.entries(d.metrics).forEach(([key, val]) => {
+          const vEl = document.getElementById("val_" + key);
+          const bEl = document.getElementById("bar_" + key);
+          if (vEl) vEl.textContent = (val > 0 ? "+" : "") + val.toFixed(2);
+          if (bEl) {
+            const min = key === "warRisk" ? 0 : -1;
+            const pct = Math.max(0, Math.min(100, ((val - min) / (1 - min)) * 100));
+            bEl.style.width = pct + "%";
+          }
+        });
+
+        loadHistory();
+      } catch (e) {
+        document.getElementById("xauMeta").textContent = "Reconnecting...";
+      }
+    }
+
+    autoTick();
+    setInterval(autoTick, 10000);
+  </script>
+</body>
+</html>
